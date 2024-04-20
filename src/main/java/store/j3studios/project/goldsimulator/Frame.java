@@ -1,8 +1,6 @@
 package store.j3studios.project.goldsimulator;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.Map;
 import java.util.Random;
 
 public class Frame extends javax.swing.JFrame {
@@ -140,9 +138,9 @@ public class Frame extends javax.swing.JFrame {
                     Thread.sleep(1000); // Espera 5 segundos                    
                     // Genera evento aleatorio
                     int tipoEvento = (int) (Math.random() * 3); // 0: Compra, 1: Venta, 2: Producción
-                    int cantidadOroCompra = (int) (Math.random() * 600) + 1; // Cantidad aleatoria entre 1 y 100                    
-                    int cantidadOroVenta = (int) (Math.random() * 350) + 1; // Cantidad aleatoria entre 1 y 10                    
-                    int cantidadOroProduction = (int) (Math.random() * 25) + 1; // Cantidad aleatoria entre 1 y 5                    
+                    int cantidadOroCompra = (int) (Math.random() * 100) + 1; // Cantidad aleatoria entre 1 y 100                    
+                    int cantidadOroVenta = (int) (Math.random() * 50) + 1; // Cantidad aleatoria entre 1 y 10                    
+                    int cantidadOroProduction = (int) (Math.random() * 5) + 1; // Cantidad aleatoria entre 1 y 5                    
                     switch (tipoEvento) {
                         case 0 -> {
                             if (unidadesTotalesOro > 0) {
@@ -181,7 +179,7 @@ public class Frame extends javax.swing.JFrame {
         unidadesTotalesOro -= unidades;
         unidadesCirculando += unidades;
         for (int i = 0; i<unidades; ++i) {
-            precioOro += new Random().nextDouble(3.5, 5.5);
+            precioOro += new Random().nextDouble(2.25, 4.0);
         }
     }
     
@@ -189,7 +187,7 @@ public class Frame extends javax.swing.JFrame {
         unidadesCirculando -= unidades;
         unidadesTotalesOro += unidades;
         for (int i = 0; i<unidades; ++i) {
-            precioOro -= new Random().nextDouble(3.25, 6.75);
+            precioOro -= new Random().nextDouble(1.50, 3.0);
         }
     }
 
@@ -197,7 +195,7 @@ public class Frame extends javax.swing.JFrame {
         unidadesCirculando += unidades;
         totalProduction += unidades;
         for (int i = 0; i<unidades; ++i) {
-            precioOro -= new Random().nextDouble(2.5, 4.25);
+            precioOro -= new Random().nextDouble(2.75, 5.5);
         }
     }
         
