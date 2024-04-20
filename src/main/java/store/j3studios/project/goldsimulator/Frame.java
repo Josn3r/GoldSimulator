@@ -10,10 +10,12 @@ public class Frame extends javax.swing.JFrame {
     }
     
     public Double precioOro = 33450.0;
+    public Double picoMaximo = 0.0;
     
     public Integer unidadesTotalesOro = 10000;
     public Integer unidadesCirculando = 0;
     public Integer totalProduction = 0;
+    public Integer totalQuemas = 0;
     
     public Integer seconds = 0;
     
@@ -30,12 +32,15 @@ public class Frame extends javax.swing.JFrame {
         boton = new javax.swing.JButton();
         totalGolds = new javax.swing.JLabel();
         compraOro = new javax.swing.JLabel();
-        ventaOro = new javax.swing.JLabel();
+        compraOroMax = new javax.swing.JLabel();
         unitsOro = new javax.swing.JLabel();
         lastEvent = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         circulatingOro = new javax.swing.JLabel();
+        totalQuemaStr = new javax.swing.JLabel();
         totalProduced = new javax.swing.JLabel();
+        ventaOro = new javax.swing.JLabel();
+        ventaOroMax = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gold's Simulator");
@@ -70,29 +75,42 @@ public class Frame extends javax.swing.JFrame {
         compraOro.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         compraOro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         compraOro.setText("Gold's Buy Price: $33.450");
-        jPanel1.add(compraOro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 540, 40));
+        jPanel1.add(compraOro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 280, 40));
 
-        ventaOro.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        ventaOro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        ventaOro.setText("Gold's Sell Price: $30.000");
-        jPanel1.add(ventaOro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 540, 40));
+        compraOroMax.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        compraOroMax.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        compraOroMax.setText("Gold's Buy Max: $0.0");
+        jPanel1.add(compraOroMax, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 140, 260, 40));
 
         unitsOro.setText("Gold's Bank Units: 10000");
         jPanel1.add(unitsOro, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, -1, -1));
 
         lastEvent.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lastEvent.setText("...");
-        jPanel1.add(lastEvent, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 540, -1));
+        jPanel1.add(lastEvent, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 540, -1));
 
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel12.setText("Last Event");
-        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 540, -1));
+        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 540, -1));
 
         circulatingOro.setText("Gold's Circulating: 0");
         jPanel1.add(circulatingOro, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 240, -1, -1));
 
+        totalQuemaStr.setText("Total Burn Gold: 0");
+        jPanel1.add(totalQuemaStr, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 300, -1, -1));
+
         totalProduced.setText("Total Gold Produced: 0");
         jPanel1.add(totalProduced, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 270, -1, -1));
+
+        ventaOro.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        ventaOro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ventaOro.setText("Gold's Sell Price: $30.000");
+        jPanel1.add(ventaOro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 280, 40));
+
+        ventaOroMax.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        ventaOroMax.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ventaOroMax.setText("Gold's Sell Max: $0.0");
+        jPanel1.add(ventaOroMax, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 180, 260, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -135,12 +153,20 @@ public class Frame extends javax.swing.JFrame {
         hiloSimulacion = () -> {
             while (started) {
                 try {
-                    Thread.sleep(1000); // Espera 5 segundos                    
+                    if (seconds >= 2000) {
+                        started = false;
+                        boton.setBackground(new java.awt.Color(0, 102, 0));
+                        boton.setText("Start Simulation");
+                        new Thread(hiloSimulacion).interrupt();
+                    }
+                    
+                    Thread.sleep(100); // Espera 5 segundos                    
                     // Genera evento aleatorio
-                    int tipoEvento = (int) (Math.random() * 3); // 0: Compra, 1: Venta, 2: Producción
+                    int tipoEvento = (int) (Math.random() * 4); // 0: Compra, 1: Venta, 2: Producción
                     int cantidadOroCompra = (int) (Math.random() * 100) + 1; // Cantidad aleatoria entre 1 y 100                    
                     int cantidadOroVenta = (int) (Math.random() * 50) + 1; // Cantidad aleatoria entre 1 y 10                    
-                    int cantidadOroProduction = (int) (Math.random() * 5) + 1; // Cantidad aleatoria entre 1 y 5                    
+                    int cantidadOroProduction = (int) (Math.random() * 100) + 1; // Cantidad aleatoria entre 1 y 5                    
+                    int cantidadOroQuema = (int) (Math.random() * 100) + 1; // Cantidad aleatoria entre 1 y 5                    
                     switch (tipoEvento) {
                         case 0 -> {
                             if (unidadesTotalesOro > 0) {
@@ -164,6 +190,15 @@ public class Frame extends javax.swing.JFrame {
                             producirOro(cantidadOroProduction);
                             lastEvent.setText("Producción de Oro (Entra en circulación) - Cantidad: " + cantidadOroProduction);
                         }
+                        case 3 -> {
+                            if (unidadesCirculando > 0) {
+                                if (cantidadOroQuema > unidadesCirculando) {
+                                    cantidadOroQuema = unidadesCirculando;
+                                }
+                                quemarOro(cantidadOroQuema);
+                                lastEvent.setText("Quema de Oro - Cantidad: " + cantidadOroQuema);
+                            }                              
+                        }
                     }
                     actualizarInterfazGrafica();
                     seconds += 1;
@@ -181,6 +216,9 @@ public class Frame extends javax.swing.JFrame {
         for (int i = 0; i<unidades; ++i) {
             precioOro += new Random().nextDouble(2.25, 4.0);
         }
+        if (precioOro > picoMaximo) {
+            picoMaximo = precioOro;
+        }
     }
     
     private void venderOro(int unidades) {
@@ -188,6 +226,9 @@ public class Frame extends javax.swing.JFrame {
         unidadesTotalesOro += unidades;
         for (int i = 0; i<unidades; ++i) {
             precioOro -= new Random().nextDouble(1.50, 3.0);
+        }
+        if (precioOro > picoMaximo) {
+            picoMaximo = precioOro;
         }
     }
 
@@ -197,15 +238,33 @@ public class Frame extends javax.swing.JFrame {
         for (int i = 0; i<unidades; ++i) {
             precioOro -= new Random().nextDouble(2.75, 5.5);
         }
+        if (precioOro > picoMaximo) {
+            picoMaximo = precioOro;
+        }
+    }
+    
+    private void quemarOro(int unidades) {
+        unidadesCirculando -= unidades;
+        //unidadesTotalesOro += unidades;
+        totalQuemas += unidades;
+        for (int i = 0; i<unidades; ++i) {
+            precioOro += new Random().nextDouble(2.0, 3.25);
+        }
+        if (precioOro > picoMaximo) {
+            picoMaximo = precioOro;
+        }
     }
         
     private void actualizarInterfazGrafica() {
         compraOro.setText("Gold's Buy Price: $" + new DecimalFormat("###,###.##").format(precioOro));
         ventaOro.setText("Gold's Buy Price: $" + new DecimalFormat("###,###.##").format(precioOro-500.0));
+        compraOroMax.setText("Gold's Buy Max: $" + new DecimalFormat("###,###.##").format(picoMaximo));
+        ventaOroMax.setText("Gold's Sell Max: $" + new DecimalFormat("###,###.##").format(picoMaximo-500.0));
         unitsOro.setText("Gold's Bank Units: " + unidadesTotalesOro);
         circulatingOro.setText("Gold's Circulating: " + unidadesCirculando);
         totalProduced.setText("Total Gold Produced: " + totalProduction);
         totalGolds.setText("Total Golds: " + (unidadesTotalesOro+unidadesCirculando));
+        totalQuemaStr.setText("Total Burn Gold: " + totalQuemas);
         
         secondsText.setText("Gold's Simulations - "+seconds+" seconds");
     }
@@ -214,6 +273,7 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JButton boton;
     private javax.swing.JLabel circulatingOro;
     private javax.swing.JLabel compraOro;
+    private javax.swing.JLabel compraOroMax;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JPanel jPanel1;
@@ -221,7 +281,9 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JLabel secondsText;
     private javax.swing.JLabel totalGolds;
     private javax.swing.JLabel totalProduced;
+    private javax.swing.JLabel totalQuemaStr;
     private javax.swing.JLabel unitsOro;
     private javax.swing.JLabel ventaOro;
+    private javax.swing.JLabel ventaOroMax;
     // End of variables declaration//GEN-END:variables
 }
